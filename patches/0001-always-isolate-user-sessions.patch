@@ -1,0 +1,68 @@
+From 787475c4cf1551f14088f7baa30fdd64e0b38db9 Mon Sep 17 00:00:00 2001
+From: user <user@email.com>
+Date: Fri, 8 Jan 2021 09:57:01 -0500
+Subject: [PATCH] Always isolate user sessions
+
+Change-Id: Ie63a84b3ce22bba97da6cdabfa49cf01776b9fe9
+---
+ cryptohome/libs/BUILD.gn             | 2 +-
+ cryptohome/storage/mount_utils.h     | 2 +-
+ login_manager/BUILD.gn               | 2 +-
+ login_manager/session_manager_impl.h | 2 +-
+ 4 files changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/cryptohome/libs/BUILD.gn b/cryptohome/libs/BUILD.gn
+index cc16899..186ce2a 100644
+--- a/cryptohome/libs/BUILD.gn
++++ b/cryptohome/libs/BUILD.gn
+@@ -19,7 +19,7 @@ config("target_defaults") {
+     "USE_TPM2=${use.tpm2}",
+     "USE_DOUBLE_EXTEND_PCR_ISSUE=${use.double_extend_pcr_issue}",
+     "USE_MOUNT_OOP=${use.mount_oop}",
+-    "USE_USER_SESSION_ISOLATION=${use.user_session_isolation}",
++    "USE_USER_SESSION_ISOLATION=true",
+   ]
+ }
+ 
+diff --git a/cryptohome/storage/mount_utils.h b/cryptohome/storage/mount_utils.h
+index 6548359..04d0055 100644
+--- a/cryptohome/storage/mount_utils.h
++++ b/cryptohome/storage/mount_utils.h
+@@ -14,7 +14,7 @@
+ namespace cryptohome {
+ 
+ constexpr bool IsolateUserSession() {
+-  return USE_USER_SESSION_ISOLATION;
++  return true;
+ }
+ 
+ // Cryptohome uses protobufs to communicate with the out-of-process mount
+diff --git a/login_manager/BUILD.gn b/login_manager/BUILD.gn
+index ba7b4cc..b3d9674 100644
+--- a/login_manager/BUILD.gn
++++ b/login_manager/BUILD.gn
+@@ -58,7 +58,7 @@ pkg_config("target_defaults") {
+     "USE_CHEETS=${use.cheets}",
+     "USE_NSS_CERTS",
+     "USE_SYSTEMD=${use.systemd}",
+-    "USE_USER_SESSION_ISOLATION=${use.user_session_isolation}",
++    "USE_USER_SESSION_ISOLATION=true",
+   ]
+ }
+ 
+diff --git a/login_manager/session_manager_impl.h b/login_manager/session_manager_impl.h
+index 426761e..c56a8a9 100644
+--- a/login_manager/session_manager_impl.h
++++ b/login_manager/session_manager_impl.h
+@@ -61,7 +61,7 @@ class VpdProcess;
+ // Enable further isolation of the user session (including the browser process
+ // tree), beyond merely running as user 'chronos'.
+ constexpr bool __attribute__((unused)) IsolateUserSession() {
+-  return USE_USER_SESSION_ISOLATION;
++  return true;
+ }
+ 
+ // Implements the DBus SessionManagerInterface.
+-- 
+2.30.0
+
