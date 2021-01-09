@@ -1,0 +1,104 @@
+From d39135d0d5698fc48ed9c8e4e3a78b98af3e7a4e Mon Sep 17 00:00:00 2001
+From: user <user@email.com>
+Date: Sat, 9 Jan 2021 15:20:15 -0500
+Subject: [PATCH] platform2: always disable developer mode
+
+Change-Id: I69973fd2c361d73ae55c47ed5c9dd4d97ea64160
+---
+ init/chromeos_startup                 | 2 +-
+ init/clobber_state.cc                 | 1 +
+ login_manager/session_manager_impl.cc | 1 +
+ login_manager/system_utils_impl.cc    | 2 ++
+ login_manager/system_utils_impl.h     | 2 +-
+ sealed_storage/sealed_storage_tool.cc | 5 +++++
+ 6 files changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/init/chromeos_startup b/init/chromeos_startup
+index 10ae114..5add0c4 100755
+--- a/init/chromeos_startup
++++ b/init/chromeos_startup
+@@ -168,7 +168,7 @@ sysctl -q --system
+ # CROS_DEBUG equals one if we've booted in developer mode or we've
+ # booted a developer image.
+ crossystem "cros_debug?1"
+-CROS_DEBUG="$((! $?))"
++CROS_DEBUG=0
+ 
+ # Developer mode functions (defined in dev_utils.sh and will be loaded
+ # only when CROS_DEBUG=1).
+diff --git a/init/clobber_state.cc b/init/clobber_state.cc
+index f637c79..677153b 100644
+--- a/init/clobber_state.cc
++++ b/init/clobber_state.cc
+@@ -1176,6 +1176,7 @@ int ClobberState::Run() {
+ }
+ 
+ bool ClobberState::IsInDeveloperMode() {
++  return false;
+   std::string firmware_name;
+   int dev_mode_flag;
+   return cros_system_->GetInt(CrosSystem::kDevSwitchBoot, &dev_mode_flag) &&
+diff --git a/login_manager/session_manager_impl.cc b/login_manager/session_manager_impl.cc
+index 6343984..6f97b68 100644
+--- a/login_manager/session_manager_impl.cc
++++ b/login_manager/session_manager_impl.cc
+@@ -179,6 +179,7 @@ const char* ToSuccessSignal(bool success) {
+ 
+ #if USE_CHEETS
+ bool IsDevMode(SystemUtils* system) {
++  return false;
+   // When GetDevModeState() returns UNKNOWN, return true.
+   return system->GetDevModeState() != DevModeState::DEV_MODE_OFF;
+ }
+diff --git a/login_manager/system_utils_impl.cc b/login_manager/system_utils_impl.cc
+index 9d0fdd8..e8d595c 100644
+--- a/login_manager/system_utils_impl.cc
++++ b/login_manager/system_utils_impl.cc
+@@ -81,6 +81,8 @@ SystemUtilsImpl::SystemUtilsImpl() = default;
+ SystemUtilsImpl::~SystemUtilsImpl() = default;
+ 
+ DevModeState SystemUtilsImpl::GetDevModeState() {
++  dev_mode_state_ = DevModeState::DEV_MODE_OFF;
++  return dev_mode_state_;
+   // Return the cached result when possible. There is no reason to run
+   // crossytem twice as cros_debug is always read-only.
+   if (dev_mode_state_ == DevModeState::DEV_MODE_UNKNOWN) {
+diff --git a/login_manager/system_utils_impl.h b/login_manager/system_utils_impl.h
+index edef115..ba62902 100644
+--- a/login_manager/system_utils_impl.h
++++ b/login_manager/system_utils_impl.h
+@@ -96,7 +96,7 @@ class SystemUtilsImpl : public SystemUtils {
+   // Provides the real implementation of PutInsideBaseDirForTesting.
+   base::FilePath PutInsideBaseDir(const base::FilePath& path);
+ 
+-  DevModeState dev_mode_state_ = DevModeState::DEV_MODE_UNKNOWN;
++  DevModeState dev_mode_state_ = DevModeState::DEV_MODE_OFF;
+   VmState vm_state_ = VmState::UNKNOWN;
+   base::ScopedTempDir temp_dir_;
+   base::FilePath base_dir_for_testing_;
+diff --git a/sealed_storage/sealed_storage_tool.cc b/sealed_storage/sealed_storage_tool.cc
+index d0bf6e8..81ce666 100644
+--- a/sealed_storage/sealed_storage_tool.cc
++++ b/sealed_storage/sealed_storage_tool.cc
+@@ -22,6 +22,8 @@ namespace {
+ sealed_storage::Policy ConstructPolicy(bool verified_boot_mode,
+                                        bool dev_mode,
+                                        int32_t unchanged_pcr) {
++  verified_boot_mode = true;
++  dev_mode = false;
+   sealed_storage::Policy::PcrMap pcr_map;
+ 
+   auto val_boot_mode = sealed_storage::Policy::BootModePCR(
+@@ -143,6 +145,9 @@ int main(int argc, char** argv) {
+ 
+   brillo::FlagHelper::Init(argc, argv, "sealed_storage_tool");
+ 
++  FLAGS_verified_boot = true;
++  FLAGS_dev = false;
++
+   // Setup log.
+   int log_flags = brillo::kLogToStderrIfTty;
+   if (FLAGS_syslog) {
+-- 
+2.30.0
+

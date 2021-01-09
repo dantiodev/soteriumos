@@ -1,0 +1,33 @@
+From 0e4ad9de93649747185b6d6dd61b4dce5e9307ab Mon Sep 17 00:00:00 2001
+From: user <user@email.com>
+Date: Sat, 9 Jan 2021 15:27:12 -0500
+Subject: [PATCH] vboot_reference: always disable developer mode
+
+Change-Id: I02a139b358d3dead60f01ce0b61e40246ad0c96a
+---
+ host/lib/crossystem.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/host/lib/crossystem.c b/host/lib/crossystem.c
+index bb10c39..c0b47a5 100644
+--- a/host/lib/crossystem.c
++++ b/host/lib/crossystem.c
+@@ -178,6 +178,7 @@ static int vb2_set_nv_storage_with_backup(enum vb2_nv_param param, int value)
+  * line, if any. */
+ static VbBuildOption VbScanBuildOption(void)
+ {
++	return VB_BUILD_OPTION_NODEBUG;
+ 	FILE* f = NULL;
+ 	char buf[4096] = "";
+ 	char *t, *saveptr;
+@@ -211,6 +212,7 @@ static vb2_error_t VbGetDebugBuild(void)
+  * Returns 1 if yes, 0 if no or indeterminate. */
+ static int VbGetCrosDebug(void)
+ {
++	return 0;
+ 	/* If the currently running system specifies its debug status, use
+ 	 * that in preference to other indicators. */
+ 	VbBuildOption option = VbScanBuildOption();
+-- 
+2.30.0
+

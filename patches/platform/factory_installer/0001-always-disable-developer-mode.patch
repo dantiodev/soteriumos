@@ -1,0 +1,26 @@
+From 83a429fef07646d2a8244b80a0400e5de7fa6445 Mon Sep 17 00:00:00 2001
+From: user <user@email.com>
+Date: Sat, 9 Jan 2021 15:24:30 -0500
+Subject: [PATCH] factory_installer: always disable developer mode
+
+Change-Id: If55ae39263c5fa74c71201f58820620dcad6f8be
+---
+ factory_install.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/factory_install.sh b/factory_install.sh
+index 861f083..0bab576 100644
+--- a/factory_install.sh
++++ b/factory_install.sh
+@@ -106,7 +106,7 @@ colorize() {
+ 
+ # Checks if 'cros_debug' is enabled.
+ is_allow_debug() {
+-  grep -qw "cros_debug" /proc/cmdline
++  false
+ }
+ 
+ # Checks if complete prompt is disabled.
+-- 
+2.30.0
+
