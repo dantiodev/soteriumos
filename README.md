@@ -1,4 +1,5 @@
 # Warning: SoteriumOS is currently a work in progress
+SoteriumOS is a highly experimental project; we currently do not provide builds and the majority of development goals have not been fully implemented.
 
 # SoteriumOS
 
