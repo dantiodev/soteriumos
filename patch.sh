@@ -2,14 +2,13 @@
 #
 # SoteriumOS patch script
 
-cd ".." || { echo "!!! Could not cd to ChromiumOS clone"; exit 1; }
-
-find "$PWD/soteriumos/patches" -type f -name "*.patch" | while read -r patch; do
-  path="$(dirname "${patch#$PWD/soteriumos/patches/}")";
-  [ -d "$PWD/$path" ] || { echo "[!] Subrepository $path not found in tree"; continue; }
+srcroot="$(dirname "$(dirname "$0")")";
+find "$(dirname "$0")/patches" -type f -name "*.patch" | while read -r patch; do
+  path="$(dirname "${patch#$(dirname "$0")/patches/}")";
+  [ -d "$srcroot/$path" ] || { echo "[!] Subrepository $path not found in tree"; continue; }
   echo "[+] Subrepository $path: applying $(basename "$patch")";
   (
-    cd "$PWD/$path";
+    cd "$srcroot/$path";
     git am "$patch";
   )
 done;
