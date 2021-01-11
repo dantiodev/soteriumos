@@ -10,7 +10,7 @@ Unless you explicitly state otherwise, any contribution(s) intentionally submitt
 
 ## Discussion
 
-Come chat with us! In our chatrooms, we discuss development, release test builds, and other relevant subjects.
+Come chat with us! In our bridged chatroom, we discuss development, release test builds, and other relevant subjects.
 
-* [Matrix](https://matrix.to/#/#soteriumos:spitetech.com).
+* [Matrix](https://matrix.to/#/#soteriumos:spitetech.com)
 * [Telegram](https://t.me/soteriumos)
